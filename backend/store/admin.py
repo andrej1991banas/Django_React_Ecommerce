@@ -34,6 +34,9 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 
+
+
+
 class CartAdmin(admin.ModelAdmin):
     list_display = ['cart_id','product', 'user', 'qty','price', 'sub_total', 'date', 'total']
     list_filter = ['date']
@@ -42,10 +45,8 @@ class CartAdmin(admin.ModelAdmin):
 
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display = [ 'buyer', 'total','payment_status', 'order_status', 'date','oid']
-    list_editable =['payment_status','order_status']
-    list_filter = ['date']
-    list_search = ['oid']
+    list_display = ['oid', 'payment_status', 'total']
+
     
 
 

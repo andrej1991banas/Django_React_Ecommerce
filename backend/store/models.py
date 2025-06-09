@@ -376,11 +376,11 @@ class Wishlist(models.Model):
 
 class Notification(models.Model):
     #reference to User model
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
     #reference to the CartOrder model
     order = models.ForeignKey(CartOrder, on_delete=models.SET_NULL, null=True, blank=True)  
     #reference to the Vendor model
-    vendor = models.ForeignKey(Vendor, on_delete=models.CASCADE)
+    vendor = models.ForeignKey(Vendor, on_delete=models.SET_NULL, null=True, blank=True)
     #reference to the CartOrderItem model
     order_item = models.ForeignKey(CartOrderItem, on_delete=models.SET_NULL, null=True, blank=True)
     seen = models.BooleanField(default=False)

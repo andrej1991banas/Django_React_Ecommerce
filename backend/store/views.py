@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from userauths.models import User
 from .models import Product, Category, Gallery, Specification, Size, Color, Cart, CartOrder, CartOrderItem, Coupons, Wishlist, Review, ProductFaq, Notification,Tax
-from .serializers import ProductFaqSerializer, CategorySerializer, ProdutSerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer,CouponsSerializer
+from .serializers import ProductFaqSerializer, CategorySerializer, ProdutSerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer,CouponsSerializer, NotificationSerializer
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -12,6 +12,19 @@ from decimal import Decimal
 
 import stripe
 stripe.api_key = settings.STRIPE_SECRET_KEY
+
+
+def send_notification(user=None, vendor=None, order=None, order_item=None):
+    Notification.objects.create(
+        user=user,
+        vendor=vendor,
+        order=order,
+        order_item=order_item,
+    )
+
+
+
+
 
 #creating APi as a query set of API
 class CategoryListAPIView(generics.ListAPIView):
@@ -423,7 +436,7 @@ class StripeCheckoutView(generics.CreateAPIView):
                     
                     }],
                     mode = 'payment',
-                    success_url = 'http://localhost:5173/payment-success' + order.oid +'?session_id={CHECKOUT_SESSION_ID}',
+                    success_url = 'http://localhost:5173/payment-success/' + order.oid +'?session_id={CHECKOUT_SESSION_ID}',
                     cancel_url = 'http://localhost:5173/payment-cancelled' + order.oid +'?session_id={CHECKOUT_SESSION_ID}',
                 )
 
@@ -434,6 +447,66 @@ class StripeCheckoutView(generics.CreateAPIView):
         # except stripe.error.CardError as e:
         except stripe.error.StripeError as e: 
             return Response({"error": f"Something went wrong while creating the checkout sesion: {str(e)}"})
+
+
+
+class PaymentSuccessView(generics.CreateAPIView):
+    serializer_class = CartOrderSerializer
+    permission_classes = [AllowAny]
+    queryset = CartOrder.objects.all()
+
+    def create(self, request, *args, **kwargs):
+        #get data sent from Reacto to backend
+        payload = request.data
+        #definingn what data fetch from paylad from React form data 
+        order_oid=payload['order_oid']
+        session_id = payload['session_id']
+
+        #comparing data from frontend and filter them in backend to return data from backend, the data we need 
+        order = CartOrder.objects.get(oid=order_oid)
+        order_items = CartOrderItem.objects.filter(order=order)
+
+        #
+        if session_id != 'null':
+            #get session id fro API response from stripe data 
+            session = stripe.checkout.Session.retrieve(session_id)
+
+            #check if the payment was successfull from strippe API, then change data in backend and show response message
+            if session.payment_status == "paid":
+                if order.payment_status == "pending":
+                    order.payment_status='paid'
+                    order.save()
+
+                    #send notification to user/buyer
+                    if order.buyer != None:
+                        send_notification(user=order.buyer, order=order)
+
+                    #send notification to vendors
+                    for o in order_items:
+                        send_notification(vendor=o.vendor, order=order, order_item=o)
+
+                    #send notification
+
+
+
+
+                    return Response({"message": "Payment Successful"})
+                
+                else:
+                    return Response({"message": "Already Paid"})
+            #data from stripe API is not "paid" then return message to user 
+            elif session.payment_status == "unpaid":
+                return Response({"message":"Your Invoice Is Unpaid"})  
+            #data from stripe API is "cancelled" then return message to user
+            elif session.payment_status == "cancelled":
+                return Response({"message":"Your Order Was Cancelled"}) 
+            #there was no payment made, so something wrong happen no stripe side API 
+            else: 
+                return Response ({"message":"An Error Occured, Try Again"})
+        #there are no data in response from stripe API it means that there was no payment made
+        else: 
+            session = None
+
 
 
 

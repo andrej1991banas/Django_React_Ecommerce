@@ -13,6 +13,8 @@ import Products from './views/store/products';
 import ProductDetail from './views/store/product_details';
 import Cart from './views/store/cart';
 import Checkout from './views/store/checkout';
+import Payment_success from './views/store/payment_success';
+
 
 function App() {
   
@@ -34,7 +36,11 @@ function App() {
       <Route path="/detail/:slug/" element={<ProductDetail />} />
       <Route path="/cart/" element={<Cart />} />
       <Route path="/checkout/:order_oid/" element={<Checkout />} />
+      <Route path="/payment-success/:order_oid/" element={<Payment_success />} />
       
+
+
+
 
     </Routes>
     <Store_footer />
