@@ -4,7 +4,7 @@ import apiInstance from '../../utils/axios';
 import GetCurrentAddress from '../plugin/user_country';
 import UserData from '../plugin/user_data';
 import CartId from '../plugin/cart_id';
-
+import moment from 'moment';
 
 
 
@@ -25,6 +25,20 @@ function ProductDetail() {
   const [sizeValue, setSizeValue] = useState("No Size")
   // set default for quantity before user choose some
   const [qtyValue, setQtyValue] = useState(1) 
+
+  const[reviews,setReviews] = useState ([])
+
+  const [createReview, setCreateReview] = useState ({
+    user_id:0,
+    product_id:product.id,
+    rating:0,
+    review:""
+  })
+
+
+
+
+
 
   const params = useParams();
   // get current location of the User with one source API call funciton
@@ -56,26 +70,26 @@ function ProductDetail() {
   };
 
   // function for choosing the size variant 
-const handleSizeButtonClick = (event) => {
-      const colorNameInput = event.target.closest('.size_button').parentNode.querySelector(".size_name");
-      setSizeValue(colorNameInput.value);
-  };
-// fuction for choosing the qty of the product
-const handleQuantityChange = (event) =>{
-  setQtyValue(event.target.value);
-}
-// function for adding the product to cart with set size, color and qty
-// getting the values for total, sub_total, tax_rates, etc. from the cart component and view (CartAPIView)
-const handleAddToCart = async () =>{
-  // console.log("User ID:" ,userData?.user_id);
-  // console.log("Product ID:", product.id);
-  // console.log("Cart ID:", cartId);
-  // console.log("Price:" , product.price);
-  // console.log("Shipping Amount:", product.shipping_amount);
-  // console.log("Qty:", qtyValue);
-  // console.log("Color:",colorValue);
-  // console.log("Size:", sizeValue);
-  // console.log("Country:", currentAddress.country);
+  const handleSizeButtonClick = (event) => {
+        const colorNameInput = event.target.closest('.size_button').parentNode.querySelector(".size_name");
+        setSizeValue(colorNameInput.value);
+    };
+  // fuction for choosing the qty of the product
+  const handleQuantityChange = (event) =>{
+    setQtyValue(event.target.value);
+  }
+  // function for adding the product to cart with set size, color and qty
+  // getting the values for total, sub_total, tax_rates, etc. from the cart component and view (CartAPIView)
+  const handleAddToCart = async () =>{
+    // console.log("User ID:" ,userData?.user_id);
+    // console.log("Product ID:", product.id);
+    // console.log("Cart ID:", cartId);
+    // console.log("Price:" , product.price);
+    // console.log("Shipping Amount:", product.shipping_amount);
+    // console.log("Qty:", qtyValue);
+    // console.log("Color:",colorValue);
+    // console.log("Size:", sizeValue);
+    // console.log("Country:", currentAddress.country);
 
   
   try{
@@ -100,6 +114,47 @@ const handleAddToCart = async () =>{
   }
 }
   
+
+
+const fetchReviewData = () =>{
+    if(product !== null){
+      apiInstance.get(`reviews/${product?.id}/`).then((res) => {
+        setReviews(res.data);
+      })
+    }
+  }
+
+  useEffect (() => {
+    fetchReviewData();
+  },[product])
+
+
+
+  const handleReviewChange = (event) =>{
+    setCreateReview({
+      ...createReview,
+      [event.target.name]: event.target.value
+    })
+
+  }
+
+
+  const handleReviewSubmit = (e) => {
+    e.preventDefault()
+
+    const formdata = new FormData()
+    formdata.append("user_id", userData?.user_id)
+    formdata.append("product_id", product?.id)
+    formdata.append("review", createReview.review)
+    formdata.append("rating", createReview.rating)
+
+    apiInstance.post(`reviews/${product.id}/`, formdata).then((res) =>{
+      console.log(res.data);
+      fetchReviewData();
+    })
+  }
+
+
 
   return (
     <div>
@@ -436,17 +491,17 @@ const handleAddToCart = async () =>{
                   {/* Column 1: Form to create a new review */}
                   <div className="col-md-6">
                     <h2>Create a New Review</h2>
-                    <form>
+                    <form onSubmit={handleReviewSubmit}>
                       <div className="mb-3">
                         <label htmlFor="username" className="form-label">
                           Rating
                         </label>
-                        <select name="" className="form-select" id="">
+                        <select name="rating" onChange={handleReviewChange} className="form-select" id="">
                           <option value="1">1 Star</option>
-                          <option value="2">2 Star</option>
-                          <option value="3">3 Star</option>
-                          <option value="4">4 Star</option>
-                          <option value="5">5 Star</option>
+                          <option value="2">2 Stars</option>
+                          <option value="3">3 Stars</option>
+                          <option value="4">4 Stars</option>
+                          <option value="5">5 Stars</option>
                         </select>
                       </div>
                       <div className="mb-3">
@@ -458,7 +513,9 @@ const handleAddToCart = async () =>{
                           id="reviewText"
                           rows={4}
                           placeholder="Write your review"
-                          defaultValue=""
+                          value={createReview.review}
+                          onChange={handleReviewChange}
+                          name="review"
                         />
                       </div>
                       <button type="submit" className="btn btn-primary">
@@ -469,46 +526,65 @@ const handleAddToCart = async () =>{
                   {/* Column 2: Display existing reviews */}
                   <div className="col-md-6">
                     <h2>Existing Reviews</h2>
-                    <div className="card mb-3">
-                      <div className="row g-0">
-                        <div className="col-md-3">
-                          <img
-                            src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-                            alt="User Image"
-                            className="img-fluid"
-                          />
-                        </div>
-                        <div className="col-md-9">
-                          <div className="card-body">
-                            <h5 className="card-title">User 1</h5>
-                            <p className="card-text">August 10, 2023</p>
-                            <p className="card-text">
-                              This is a great product! I'm really satisfied with it.
-                            </p>
+                    {reviews?.map((r,index) =>(
+                      <div className="card mb-3" key={index}>
+                        <div className="row g-0">
+                          <div className="col-md-3">
+                            <img
+                              src={r.profile.image}
+                              alt="User Image"
+                              className="img-fluid"
+                            />
+                          </div>
+                          <div className="col-md-9">
+                            <div className="card-body">
+                              <h5 className="card-title">{r.profile.fullname}</h5>
+                              <p className="card-text">{moment(r.date).format("MMM D YYYY")}</p>
+                              <p className="card-text">
+                                {r.review} <br/>
+                                {r.rating ===1 &&
+                                <i className='fas fa-star'></i>}
+
+                                {r.rating ===2 &&
+                                  <>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                  </>
+                                }
+
+                                 {r.rating ===3 &&
+                                  <>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                  </>
+                                }
+
+                                 {r.rating ===4 &&
+                                  <>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                  </>
+                                }
+
+                                {r.rating ===5 &&
+                                  <>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                    <i className='fas fa-star'></i>
+                                  </>
+                                }
+
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="card mb-3">
-                      <div className="row g-0">
-                        <div className="col-md-3">
-                          <img
-                            src="https://www.gravatar.com/avatar/2c7d99fe281ecd3bcd65ab915bac6dd5?s=250"
-                            alt="User Image"
-                            className="img-fluid"
-                          />
-                        </div>
-                        <div className="col-md-9">
-                          <div className="card-body">
-                            <h5 className="card-title">User 2</h5>
-                            <p className="card-text">August 15, 2023</p>
-                            <p className="card-text">
-                              The quality of this product exceeded my expectations!
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                        ))}
                     {/* More reviews can be added here */}
                   </div>
                 </div>

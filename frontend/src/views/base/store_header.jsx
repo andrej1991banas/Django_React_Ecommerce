@@ -16,8 +16,20 @@ function Store_header() {
         state.user
     ]);
 
+    const [search, setSearch] = useState("")
 
+    const handleSearchChange = (event) => {
+        setSearch(event.target.value)
+        console.log(search)
+    }
 
+    const navigate= useNavigate()
+
+    const handleSearchSubmit = () => {
+        // setting up the search query
+        navigate(`/search?query=${search}`)
+    }
+    // const { cartCount } = useContext(CartContext);
 
   return (
     <div>
@@ -76,10 +88,10 @@ function Store_header() {
                                  </li>
      
                              </ul>
-                             {/* <div className="d-flex">
+                             <div className="d-flex">
                                  <input onChange={handleSearchChange} name='search' className="form-control me-2" type="text" placeholder="Search" aria-label="Search" />
                                  <button onClick={handleSearchSubmit} className="btn btn-outline-success me-2" type="submit">Search</button>
-                             </div> */}
+                             </div>
                              {isLoggedIn()
                                  ?
                                  <>

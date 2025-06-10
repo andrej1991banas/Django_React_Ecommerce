@@ -14,6 +14,9 @@ import ProductDetail from './views/store/product_details';
 import Cart from './views/store/cart';
 import Checkout from './views/store/checkout';
 import Payment_success from './views/store/payment_success';
+import Search from './views/store/search';
+
+
 
 
 function App() {
@@ -37,6 +40,7 @@ function App() {
       <Route path="/cart/" element={<Cart />} />
       <Route path="/checkout/:order_oid/" element={<Checkout />} />
       <Route path="/payment-success/:order_oid/" element={<Payment_success />} />
+      <Route path="/search/" element={<Search />} />
       
 
 

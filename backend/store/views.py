@@ -2,12 +2,16 @@ from django.shortcuts import render, redirect
 from django.conf import settings
 from userauths.models import User
 from .models import Product, Category, Gallery, Specification, Size, Color, Cart, CartOrder, CartOrderItem, Coupons, Wishlist, Review, ProductFaq, Notification,Tax
-from .serializers import ProductFaqSerializer, CategorySerializer, ProdutSerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer,CouponsSerializer, NotificationSerializer
+from .serializers import ProductFaqSerializer, CategorySerializer, ProductSerializer, CartSerializer, CartOrderSerializer, CartOrderItemSerializer,CouponsSerializer, NotificationSerializer, ReviewSerializer
 
 from rest_framework import generics, status
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 from decimal import Decimal
+from django.core.mail import EmailMultiAlternatives
+from django.template.loader import render_to_string
+
+
 
 
 import stripe
@@ -42,7 +46,7 @@ class ProductListAPIView(generics.ListAPIView):
     #get all Category items
     queryset = Product.objects.all()
     #define wchich serializer to use 
-    serializer_class = ProdutSerializer
+    serializer_class = ProductSerializer
     #define who can see the API data
     permission_classes = [AllowAny,]
 
@@ -50,7 +54,7 @@ class ProductListAPIView(generics.ListAPIView):
 #API for display data for only one Product
 class ProductDetailAPIView(generics.RetrieveAPIView):
     #define wchich serializer to use 
-    serializer_class = ProdutSerializer
+    serializer_class = ProductSerializer
     #define who can see the API data
     permission_classes = [AllowAny,]
 
@@ -481,14 +485,49 @@ class PaymentSuccessView(generics.CreateAPIView):
                     if order.buyer != None:
                         send_notification(user=order.buyer, order=order)
 
-                    #send notification to vendors
+                    #send notification AND EMAIL    to vendors
                     for o in order_items:
                         send_notification(vendor=o.vendor, order=order, order_item=o)
+                        context = {
+                            'order': order,
+                            'order_items': order_items,
+                            'vendor': o.vendor,
+                        }
 
-                    #send notification
+                        subject="New Sale"
+                        text_body = render_to_string('email/vendor_sale.txt', context) 
+                        html_body = render_to_string('email/vendor_sale.html', context) 
+
+                        msg = EmailMultiAlternatives(
+                            subject = subject,
+                            from_email = settings.DEFAULT_FROM_EMAIL,
+                            to = [o.vendor.email],
+                            body = text_body,
+                        )
+
+                        msg.attach_alternative(html_body, "text/html")
+                        msg.send()
 
 
+                    #send email to buyer
+                    context = {
+                        'order': order,
+                        'order_items': order_items,
+                    }
 
+                    subject="Order Placed Successfuly"
+                    text_body = render_to_string('email/order_placed.txt', context) 
+                    html_body = render_to_string('email/order_placed.html', context) 
+
+                    msg = EmailMultiAlternatives(
+                        subject = subject,
+                        from_email = settings.DEFAULT_FROM_EMAIL,
+                        to = [order.email],
+                        body = text_body,
+                    )
+
+                    msg.attach_alternative(html_body, "text/html")
+                    msg.send()
 
                     return Response({"message": "Payment Successful"})
                 
@@ -507,6 +546,58 @@ class PaymentSuccessView(generics.CreateAPIView):
         else: 
             session = None
 
+
+class ReviewListAPIView(generics.ListCreateAPIView):
+    serializer_class = ReviewSerializer
+    permission_classes = [AllowAny,]
+    queryset = Review.objects.all()
+
+    def get_queryset(self):
+        #getting data from request/url data defined in api/url
+        product_id = self.kwargs['product_id']
+        
+        #filter queryset of products to get specific product by its ID
+        product = Product.objects.get(id=product_id)
+        #find the review for specific product
+        reviews = Review.objects.filter(product=product)
+        #return review data
+        return reviews
+    
+
+    def create(self, request, *args, **kwargs):
+        #define payload data from reuest data
+        payload = request.data
+        #catching data from request
+        user_id = payload['user_id']
+        product_id =payload['product_id']
+        rating = payload['rating']
+        review = payload['review']
+
+        #using data from request to get User and Product by its IDs
+        user = User.objects.get(id=user_id)
+        product = Product.objects.get(id=product_id)
+        
+        #creating Review model instance by using data from payload
+        Review.objects.create(
+            user = user,
+            product = product,
+            rating = rating,
+            review = review,
+        )
+        #returnig response message for confirmation that we caught data from frontend and send message success back to frontend
+        return Response({"message": "Review Created Successfully"}, status=status.HTTP_201_CREATED)
+
+
+class SearchPorductAPIView(generics.ListCreateAPIView):
+    serializer_class = ProductSerializer
+    permission_classes = [AllowAny,]
+    queryset = Product.objects.all()
+
+    def get_queryset(self):
+        query = self.request.GET.get("query")
+        products = Product.objects.filter(status="published", title__icontains=query)
+        return products
+        
 
 
 

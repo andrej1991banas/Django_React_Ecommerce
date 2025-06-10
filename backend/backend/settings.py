@@ -12,6 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 from datetime import timedelta
 from pathlib import Path
 from environs import Env
+import os
+
+
+
 
 env = Env()
 env.read_env()
@@ -58,6 +62,7 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt.token_blacklist',
     'drf_yasg',
     'corsheaders',
+    'anymail',
 
 
 ]
@@ -78,7 +83,7 @@ ROOT_URLCONF = 'backend.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "templates")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -157,8 +162,23 @@ AUTH_USER_MODEL = 'userauths.User' #informing Django about new Customer USer mod
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#payment client set up 
 STRIPE_PUBLIC_KEY = env("STRIPE_PUBLIC_KEY")
 STRIPE_SECRET_KEY = env("STRIPE_SECRET_KEY")
+
+
+#Email client set up
+MAILGUN_API_KEY = env("MAILGUN_API_KEY")
+MAILGUN_SENDER_DOMAIN = env("MAILGUN_SENDER_DOMAIN")
+
+ANYMAIL = {
+    "MAILGUN_API_KEY":  env("MAILGUN_API_KEY"),
+    "MAILGUN_SENDER_DOMAIN": env("MAILGUN_SENDER_DOMAIN"),
+}
+
+DEFAULT_FROM_EMAIL= 'limitless.lokca@gmail.com'
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+
 
 
 ##SET UP CONFIGURATION FOR jwt TOKENS

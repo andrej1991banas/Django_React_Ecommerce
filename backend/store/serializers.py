@@ -1,4 +1,6 @@
 from rest_framework import serializers
+
+from userauths.serializer import ProfileSerializer
 from .models import Product, Category, Gallery, Specification, Size, Color, Cart, CartOrder, CartOrderItem, Coupons, Wishlist, Review, ProductFaq, Notification
 from vendor.models import Vendor
 
@@ -57,7 +59,7 @@ class GallerySerializer(serializers.ModelSerializer):
 
 
 #serializer for Product
-class ProdutSerializer(serializers.ModelSerializer):
+class ProductSerializer(serializers.ModelSerializer):
     gallery = GallerySerializer(many=True, read_only=True)
     color = ColorSerializer(many=True, read_only=True)
     size = SizeSerializer(many=True, read_only=True)
@@ -97,7 +99,7 @@ class ProdutSerializer(serializers.ModelSerializer):
 
     #function for unpack the data in the arrays, to deeper levels of the data
     def __init__(self, *args, **kwargs):
-        super(ProdutSerializer, self).__init__(*args, **kwargs)
+        super(ProductSerializer, self).__init__(*args, **kwargs)
 
         request = self.context.get("request")
         if request and request.method=="POST":
@@ -199,10 +201,10 @@ class VendorSerializer(serializers.ModelSerializer):
 
 #serializer for Review
 class ReviewSerializer(serializers.ModelSerializer):
-    
+    profile = ProfileSerializer()
     class Meta:
         model = Review
-        fields = "__all__"
+        fields = ["id", "review", "rating", "user", "profile", "date"]
     #function for unpack the data in the arrays, to deeper levels of the data
     def __init__(self, *args, **kwargs):
         super(ReviewSerializer, self).__init__(*args, **kwargs)

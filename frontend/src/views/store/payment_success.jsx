@@ -17,6 +17,9 @@ function Payment_success() {
     
     const urlParam = new URLSearchParams(window.location.search)
     const sessionId= urlParam.get("session_id")
+    const [postRequestMade, setPostRequestMade] = useState(false);
+
+
 
     useEffect(() => {
     // Fetch order details
@@ -24,33 +27,34 @@ function Payment_success() {
         setOrder(res.data);
         
     });
-}, [param.order_oid]); // Runs only when `order_oid` changes
+    }, [param.order_oid]); // Runs only when `order_oid` changes
 
-useEffect(() => {
+    useEffect(() => {
     // Ensure `order` and `sessionId` exist before making the POST request
-    if (order.oid && sessionId) {
-        const formdata = new FormData();
-        formdata.append("order_oid", order.oid);
-        formdata.append("session_id", sessionId);
+        if (order.oid && sessionId && !postRequestMade) {
+            const formdata = new FormData();
+            formdata.append("order_oid", order.oid);
+            formdata.append("session_id", sessionId);
 
-        setStatus("Veryfing");
+            setPostRequestMade(true);
+            setStatus("Veryfing");
 
-        apiInstance.post(`payment-success/${order.oid}/`, formdata).then((res) => {
-            if (res.data.message === "Payment Successful")
-                setStatus("Payment Successful");
+            apiInstance.post(`payment-success/${order.oid}/`, formdata).then((res) => {
+                if (res.data.message === "Payment Successful")
+                    setStatus("Payment Successful");
 
-            if (res.data.message === "Already Paid")
-                setStatus("Already Paid");
+                if (res.data.message === "Already Paid")
+                    setStatus("Already Paid");
 
-            if (res.data.message === "Your Invoice Is Unpaid")
-                setStatus("Your Invoice Is Unpaid");
+                if (res.data.message === "Your Invoice Is Unpaid")
+                    setStatus("Your Invoice Is Unpaid");
 
-            if (res.data.message === "Your Order Was Cancelled")
-                setStatus("Your Order Was Cancelled");
-            
-        });
-    }
-}, [order, sessionId]); // Runs only when `order` or `sessionId` change
+                if (res.data.message === "Your Order Was Cancelled")
+                    setStatus("Your Order Was Cancelled");
+                
+            });
+        }
+    }, [order]); // Runs only when `order`  change
 
 
     return (

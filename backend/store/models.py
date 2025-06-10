@@ -357,7 +357,7 @@ class Review(models.Model):
 @receiver(post_save, sender=Review)
 def update_product_rating(sender, instance, **kwargs):
     if instance.product:
-        instance.produt.save()
+        instance.product.save()
 
 
 # Define a model for Wishlist

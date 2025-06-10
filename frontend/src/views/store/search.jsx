@@ -1,11 +1,10 @@
 import React, {useState, useEffect, useRef } from 'react'
 import apiInstance from '../../utils/axios'
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import GetCurrentAddress from '../plugin/user_country';
 import UserData from '../plugin/user_data';
 import CartId from '../plugin/cart_id';
 import Swal from 'sweetalert2';
-
 
 const Toast = Swal.mixin({
   toast: true,
@@ -20,9 +19,9 @@ const Toast = Swal.mixin({
 })
 
 
+function Search() {
 
-function Products() {
-  const [products, setProducts] = useState([]) ;
+    const [products, setProducts] = useState([]) ;
   const [categories, setCategories] = useState([]);
   // epecting data in array coming from backend
 
@@ -70,21 +69,21 @@ function Products() {
     setSelectedProduct(productId)
   }
 
-    useEffect(() =>{
-        // grabbing the API data with defined request method (in this case GET)
-        // apiInstance is defined with the BASE_URL so just need the "products/"
-        apiInstance.get(`products/`).then((res) =>{
-            setProducts(res.data)
-        })
+  const [searchParams] = useSearchParams();
+  const query = searchParams.get("query")
 
-        apiInstance.get(`category/`).then((res) =>{
-            setCategories(res.data)
-            // setting the data to the const useState, wehn calling useState variable getting data with setProducts
-        })
-      
-    }, [])
+
+
+
+  // useEffect is a react hook that will run when the component is loaded
+
+    useEffect(() =>{
+        apiInstance.get(`search/?query=${query}`).then((res) =>{
+            setProducts(res.data)
+        }) 
+    }, [query])
     // empty list [], means we load the page with data only once
-    
+        
 
   const handleAddToCart = async (product_id, price, shipping_amount) => {
     // creating new object which will fetch all dat for API POST rewuest from our React Frontend
@@ -118,7 +117,6 @@ function Products() {
 
 
   return (
-    
     <div>
         <main className="mt-5">
             <div className="container">
@@ -305,8 +303,7 @@ function Products() {
             </div>
         </main>
     </div>
-
-    )
+  )
 }
 
-export default Products
+export default Search

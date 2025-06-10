@@ -4,7 +4,7 @@ import apiInstance from '../../utils/axios';
 import { useNavigate, useParams } from 'react-router-dom';
 import { PayPalScriptProvider, PayPalButtons } from '@paypal/react-paypal-js';
 import Swal from 'sweetalert2';
-import { SERVER_URL } from '../../utils/constants';
+import { SERVER_URL, PAYPAL_CLIENT_ID } from '../../utils/constants';
 
 
 
@@ -67,6 +67,17 @@ function Checkout() {
         event.target.form.submit();
         
     }
+
+
+    // const initialOptions = {
+    // clientId: PAYPAL_CLIENT_ID,
+    // currency: "USD",
+    // intent: "capture",
+    // };
+
+   
+
+
 
     return (
     <>
@@ -247,7 +258,7 @@ function Checkout() {
                                                     {
                                                         amount: {
                                                             currency_code: "USD",
-                                                            value: 100
+                                                            value: order.tota.toString()
                                                         }
                                                     }
                                                 ]
@@ -258,18 +269,18 @@ function Checkout() {
                                             return actions.order.capture().then((details) => {
                                                 const name = details.payer.name.given_name;
                                                 const status = details.status;
-                                                const payapl_order_id = data.orderID;
+                                                const paypal_order_id = data.orderID;
 
                                                 console.log(status);
                                                 if (status === "COMPLETED") {
-                                                    navigate(`/payment-success/${order.oid}/?payapl_order_id=${payapl_order_id}`)
+                                                    navigate(`/payment-success/${order.oid}/?payapl_order_id=${paypal_order_id}`)
                                                 }
                                             })
                                         }}
                                     />
-                                </PayPalScriptProvider> */}
+                                </PayPalScriptProvider>
 
-                                {/* <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Flutterwave)</button>
+                                <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Flutterwave)</button>
                                 <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Paystack)</button>
                                 <button type="button" className="btn btn-primary btn-rounded w-100 mt-2">Pay Now (Paypal)</button> */}
                             </section>
