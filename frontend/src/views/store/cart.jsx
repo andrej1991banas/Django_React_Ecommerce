@@ -1,13 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import apiInstance from '../../utils/axios';
 import UserData from '../plugin/user_data';
 import CartId from '../plugin/cart_id';
 import GetCurrentAddress from '../plugin/user_country';
 import Swal from 'sweetalert2';
 import { useNavigate } from 'react-router-dom';
-
+import { CartContext } from '../plugin/context';
 
 
 
@@ -46,13 +46,15 @@ function Cart() {
   const navigate = useNavigate();
 
 
+  const [cartCount, setCartCount] = useContext(CartContext);
+
   const fetchCartData = (cartId, userId) =>{
     const url = userId ? `cart-list/${cartId}/${userId}/` : `cart-list/${cartId}/`
 
     apiInstance.get(url).then((res) =>{
       console.log(res.data)
       setCart(res.data)
-      
+      setCartCount(res.data.length)
     })
   }
 
@@ -148,6 +150,7 @@ function Cart() {
 
       fetchCartData(cart_id, userData?.user_id)
       fetchCartTotalData(cart_id, userData?.user_id)
+
 
       Swal.fire({
             icon: 'success',

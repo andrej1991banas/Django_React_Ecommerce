@@ -224,6 +224,7 @@ class CartOrder(models.Model):
     
     ORDER_STATUS = (
             ("paid", "Paid"),
+            ("pending", "Pending"),
             ("fullflled", "Fullfilled"),
             ("cancelled", "Caneclled"),
         )

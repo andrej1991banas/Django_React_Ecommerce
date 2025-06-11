@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Login from './views/auth/login';
 import { Routes, Route, BrowserRouter } from 'react-router-dom';
 import Register from './views/auth/register';
@@ -15,40 +15,79 @@ import Cart from './views/store/cart';
 import Checkout from './views/store/checkout';
 import Payment_success from './views/store/payment_success';
 import Search from './views/store/search';
+import { CartContext } from './views/plugin/context';  
+import CartId from './views/plugin/cart_id';
+import UserData from './views/plugin/user_data';
+import apiInstance from './utils/axios';
+import Account from './views/customer/account';
+import PrivateRoute from './layout/PrivateRoute';
+import Orders from './views/customer/orders';
+import Order_detail from './views/customer/order_detail';
+import Wishlist from './views/customer/wishlist';
+
+
+
 
 
 
 
 function App() {
+  const [count, setCount] = useState(0);
+  const [cartCount, setCartCount] = useState();
+
+  const cart_id=CartId()
+  const userData=UserData()
+
+
+  useEffect (() => {
+    // if statment if user exists grab user data and use them in url or else not use None user data
+    const url = userData ? `cart-list/${cart_id}/${ userData.user_id}/` : `cart-list/${cart_id}/`
+    apiInstance.get(url).then((res) => {
+      setCartCount(res.data.length)
+    }) 
+  })
+
   
+
 
   return (
-  <BrowserRouter>
-  <Store_header />
-  
-    <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/dashboard" element={<Dashboard />} />
-      <Route path="/logout" element={<Logout />} />
-      <Route path="/forgot-password" element={<ForgotPassword />} />
-      <Route path="/create-new-password" element={<CreatePassword />} />
+    <CartContext.Provider value={[cartCount, setCartCount]}> 
+      <BrowserRouter>
+        <Store_header />
+          <MainWrapper>
+            <Routes>
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/logout" element={<Logout />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/create-new-password" element={<CreatePassword />} />
 
-      {/* Store components     */}
-      <Route path="/" element={<Products />} />
-      <Route path="/detail/:slug/" element={<ProductDetail />} />
-      <Route path="/cart/" element={<Cart />} />
-      <Route path="/checkout/:order_oid/" element={<Checkout />} />
-      <Route path="/payment-success/:order_oid/" element={<Payment_success />} />
-      <Route path="/search/" element={<Search />} />
-      
+              {/* Store components     */}
+              <Route path="/" element={<Products />} />
+              <Route path="/detail/:slug/" element={<ProductDetail />} />
+              <Route path="/cart/" element={<Cart />} />
+              <Route path="/checkout/:order_oid/" element={<Checkout />} />
+              <Route path="/payment-success/:order_oid/" element={<Payment_success />} />
+              <Route path="/search/" element={<Search />} />
+
+              {/* Customer components */}
+              {/* private route will close pages from not logged in users */}
+              <Route path="/customer/account/" element={<PrivateRoute> <Account /> </PrivateRoute>} />
+              <Route path="/customer/orders/" element={<PrivateRoute> <Orders /> </PrivateRoute>} />
+              <Route path="/customer/orders/:order_oid/" element={<PrivateRoute> <Order_detail /> </PrivateRoute>} />
+              <Route path="/customer/wishlist/" element={<PrivateRoute> <Wishlist /> </PrivateRoute>} />
+              
 
 
 
 
-    </Routes>
-    <Store_footer />
-  </BrowserRouter>
+            </Routes>
+          </MainWrapper>
+        <Store_footer />
+      </BrowserRouter>
+    </CartContext.Provider>
+
   )
 }
 

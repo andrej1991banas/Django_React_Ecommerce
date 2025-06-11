@@ -2,7 +2,7 @@ from django.shortcuts import render
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework_simplejwt.views import TokenObtainPairView
 from .models import User, Profile
-from .serializer import MyTokenObtainPairSerializer, RegisterSerializer, UserSerializer
+from .serializer import MyTokenObtainPairSerializer, RegisterSerializer, UserSerializer, ProfileSerializer
 from rest_framework import generics
 from rest_framework.permissions import IsAuthenticated, AllowAny
 import random
@@ -82,8 +82,20 @@ class PasswordChangeView(generics.CreateAPIView):
             return Response({"message": "As Error Occured"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
+class ProfileView(generics.RetrieveAPIView):
+    """ API view getting profile for a user"""
+    permission_classes = (AllowAny,)
+    serializer_class = ProfileSerializer
 
 
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        #get user data from data and grabbing id to use for filter user model and get user instance
+        user = User.objects.get(id=user_id)
+        #eget profile instance for user
+        profile = Profile.objects.get(user=user)
+
+        return profile
 
 
 

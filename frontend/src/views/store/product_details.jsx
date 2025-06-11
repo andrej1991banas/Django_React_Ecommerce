@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext} from 'react';
 import { useParams } from 'react-router-dom';
 import apiInstance from '../../utils/axios';
 import GetCurrentAddress from '../plugin/user_country';
 import UserData from '../plugin/user_data';
 import CartId from '../plugin/cart_id';
 import moment from 'moment';
-
+import { CartContext } from '../plugin/context';
+import Cart from './cart';
 
 
 function ProductDetail() {
@@ -35,8 +36,11 @@ function ProductDetail() {
     review:""
   })
 
+  const [cartCount, setCartCount] = useContext(CartContext);
 
 
+ 
+ 
 
 
 
@@ -53,7 +57,7 @@ function ProductDetail() {
   
   useEffect(() => {
     // from api instance and base url get product details and data from API json load
-    apiInstance.get(`products/${params.slug}/`).then((res) => {
+    apiInstance.get(`products/${params.slug}/`).then((res) => { 
       setProduct(res.data);
       setSpecifications(res.data.specification);
       setGallery(res.data.gallery);
@@ -106,8 +110,14 @@ function ProductDetail() {
     formData.append('country', currentAddress.country);
     // sending the data to the API POST request
     // create variable for the response from the API POST request, with url from APi backend for post request 
-    const response = await apiInstance.post(`cart-view/`, formData)
-    console.log(response.data);
+    await apiInstance.post(`cart-view/`, formData)
+    
+    // fetch updated cart count items
+    const url = userData ? `cart-list/${cartId}/${ userData.user_id}/` : `cart-list/${cartId}/`
+      apiInstance.get(url).then((res) => {
+        setCartCount(res.data.length)
+    })
+
 
   }catch(error){
     console.log(error);
@@ -116,43 +126,49 @@ function ProductDetail() {
   
 
 
-const fetchReviewData = () =>{
-    if(product !== null){
-      apiInstance.get(`reviews/${product?.id}/`).then((res) => {
-        setReviews(res.data);
-      })
+const fetchReviewData = async () => {
+    if (product && product.id) {
+      
+        try {
+            const res = await apiInstance.get(`reviews/${product.id}/`);
+            
+            setReviews(res.data);
+        } catch (error) {
+            console.error('Error fetching reviews:', error);
+            // Optionally set an error state or show a message to the user
+        }
     }
-  }
+};
 
-  useEffect (() => {
+useEffect (() => {
+  fetchReviewData();
+},[product])
+
+
+
+const handleReviewChange = (event) =>{
+  setCreateReview({
+    ...createReview,
+    [event.target.name]: event.target.value
+  })
+
+}
+
+
+const handleReviewSubmit = (e) => {
+  e.preventDefault()
+
+  const formdata = new FormData()
+  formdata.append("user_id", userData?.user_id)
+  formdata.append("product_id", product?.id)
+  formdata.append("review", createReview.review)
+  formdata.append("rating", createReview.rating)
+
+  apiInstance.post(`reviews/${product.id}/`, formdata).then((res) =>{
+    console.log(res.data);
     fetchReviewData();
-  },[product])
-
-
-
-  const handleReviewChange = (event) =>{
-    setCreateReview({
-      ...createReview,
-      [event.target.name]: event.target.value
-    })
-
-  }
-
-
-  const handleReviewSubmit = (e) => {
-    e.preventDefault()
-
-    const formdata = new FormData()
-    formdata.append("user_id", userData?.user_id)
-    formdata.append("product_id", product?.id)
-    formdata.append("review", createReview.review)
-    formdata.append("rating", createReview.rating)
-
-    apiInstance.post(`reviews/${product.id}/`, formdata).then((res) =>{
-      console.log(res.data);
-      fetchReviewData();
-    })
-  }
+  })
+}
 
 
 

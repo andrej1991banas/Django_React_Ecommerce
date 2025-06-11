@@ -2,7 +2,7 @@ from django.urls import path
 from userauths import views as userauths_views
 from store import views as store_views
 from rest_framework_simplejwt.views import TokenRefreshView
-
+from customer import views as customer_views
 
 
 urlpatterns = [
@@ -11,6 +11,7 @@ urlpatterns = [
     path('user/register/', userauths_views.RegisterView.as_view()),
     path('user/password-reset/<email>/', userauths_views.PasswordResetEmailVerify.as_view(), name='password_reset'),
     path('user/password-change/', userauths_views.PasswordChangeView.as_view(), name='password_change' ),
+    path('user/profile/<user_id>/', userauths_views.ProfileView.as_view(), name='password_change' ),
 
 
     #store endpoints
@@ -34,6 +35,12 @@ urlpatterns = [
     # payments endpoints
     path('stripe-checkout/<order_oid>/', store_views.StripeCheckoutView.as_view()),
     path('payment-success/<order_oid>/', store_views.PaymentSuccessView.as_view()),
-    
+
+
+    #Customer endpoints
+    path('customer/orders/<user_id>/', customer_views.OrderAPIView.as_view()),
+    path('customer/order/<user_id>/<order_oid>/', customer_views.OrderDetailsAPIView.as_view()),
+    path('customer/wishlist/<user_id>/', customer_views.WishlistAPIView.as_view()),
+
     
 ]
