@@ -24,7 +24,13 @@ import PrivateRoute from './layout/PrivateRoute';
 import Orders from './views/customer/orders';
 import Order_detail from './views/customer/order_detail';
 import Wishlist from './views/customer/wishlist';
-
+import Customer_notification from './views/customer/customer_notification';
+import  CustomerSettings from './views/customer/settings';
+import Invoice  from './views/customer/invoice';
+import DashboardVendor from './views/vendor/dashboard';
+import ProductsVendor from './views/vendor/products';
+import OrdersVendor from './views/vendor/orders';
+import OrderDetailVendor from './views/vendor/order_detail';
 
 
 
@@ -77,9 +83,15 @@ function App() {
               <Route path="/customer/orders/" element={<PrivateRoute> <Orders /> </PrivateRoute>} />
               <Route path="/customer/orders/:order_oid/" element={<PrivateRoute> <Order_detail /> </PrivateRoute>} />
               <Route path="/customer/wishlist/" element={<PrivateRoute> <Wishlist /> </PrivateRoute>} />
+              <Route path="/customer/notifications/" element={<PrivateRoute> <Customer_notification /> </PrivateRoute>} />
+              <Route path="/customer/settings/" element={<PrivateRoute> <CustomerSettings /> </PrivateRoute>} />
+              <Route path="/customer/invoice/:order_oid/" element={<PrivateRoute> <Invoice /> </PrivateRoute>} />
               
-
-
+              {/* Vendor components */}
+              <Route path="/vendor/dashboard/" element={<PrivateRoute> <DashboardVendor /> </PrivateRoute>} />   
+              <Route path="/vendor/products/" element={<PrivateRoute> <ProductsVendor /> </PrivateRoute>} /> 
+              <Route path="/vendor/orders/" element={<PrivateRoute> <OrdersVendor /> </PrivateRoute>} /> 
+              <Route path="/vendor/order/:order_oid/" element={<PrivateRoute> <OrderDetailVendor /> </PrivateRoute>} /> 
 
 
             </Routes>

@@ -21,55 +21,67 @@ function Sidebar() {
 
     return (
     <div>
-        <div className="col-lg-5">
-        <div className="d-flex justify-content-center align-items-center flex-column mb-2 shadow rounded-3">
-            <img
-            src={profile.image}
-            style={{ width: 120 }}
-            alt=""
-            />
-            <div className="text-center">
-            <h3 className="mb-0">{profile.fullname}</h3>
-            <p className="mt-0">
-                <a href="">Edit Account</a>
-            </p>
-            </div>
+        <div className="col-lg-4">
+        <div className="rounded shadow p-3">
+            <table className="table table-bordered">
+            <tbody>
+                <div className="d-flex justify-content-center align-items-center flex-column mb-2 shadow rounded-3">
+                    <img
+                    src={profile.image}
+                    style={{ width: 120 }}
+                    alt=""
+                    />
+                    <div className="text-center">
+                    <h3 className="mb-0">{profile.fullname}</h3>
+                    <p className="mt-0">
+                        <a href="">Edit Account</a>
+                    </p>
+                </div>
+                </div>
+            </tbody>
+            </table>
+
+            <h4>Quick Links</h4>
+            <table className="table table-bordered">
+            <tbody>
+                <tr>
+                <td>
+                    <div className="fw-bold">
+                        <Link className ="text-dark" to= '/customer/account/'> Account</Link>
+                    </div>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <div className="fw-bold">
+                        <Link className ="text-dark" to= '/customer/orders/'>Orders</Link>
+                    </div>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <div className="fw-bold">
+                        <Link to= {'/customer/wishlist/'} className="text-dark" >Wishlist</Link>
+                    </div>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <div className="fw-bold">
+                        <Link to= {'/customer/notifications/'} className="text-dark" >Notifications</Link>
+                    </div>
+                </td>
+                </tr>
+                <tr>
+                <td>
+                    <div className="fw-bold">
+                        <Link to= {'/customer/settings/'} className="text-dark" >Settings</Link>
+                    </div>
+                </td>
+                </tr>
+            </tbody>
+            </table>
         </div>
-        <ol className="list-group">
-            <li className="list-group-item d-flex justify-content-between align-items-start">
-            <div className="ms-2 me-auto">
-                <div className="fw-bold">
-                    <Link className ="text-dark" to= '/customer/account/'> Account</Link>
-                </div>
-            </div>
-            </li>
-            <li className="list-group-item d-flex justify-content-between align-items-start">
-            <div className="ms-2 me-auto">
-                <div className="fw-bold">
-                    <Link className ="text-dark" to= '/customer/orders/'>Orders</Link>
-                </div>
-            </div>
-            <span className="badge bg-primary rounded-pill">14</span>
-            </li>
-            <li className="list-group-item d-flex justify-content-between align-items-start">
-            <div className="ms-2 me-auto">
-                <div className="fw-bold">
-                    <Link to= '/customer/wishlist/' className="text-dark" >Wishlist</Link>
-                </div>
-            </div>
-            </li>
-            <li className="list-group-item d-flex justify-content-between align-items-start">
-            <div className="ms-2 me-auto">
-                <div className="fw-bold">Notification</div>
-            </div>
-            <span className="badge bg-primary rounded-pill">14</span>
-            </li>
-            <li className="list-group-item d-flex justify-content-between align-items-start">
-            <div className="ms-2 me-auto">
-                <div className="fw-bold">Setting</div>
-            </div>
-            </li>
-        </ol>
         </div>
     </div>
     )

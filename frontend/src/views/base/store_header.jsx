@@ -1,6 +1,6 @@
 import React, { useContext, useState, useEffect } from 'react'
 import { userAuthStore } from '../../store/auth';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 // import { CartContext } from '../plugin/Context';
 import apiInstance from '../../utils/axios';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +34,13 @@ function Store_header() {
         navigate(`/search?query=${search}`)
     }
     // const { cartCount } = useContext(CartContext);
+
+
+    const location =useLocation()
+    const isActiveLink = (currentPath, LinkPath) => {
+        return currentPath.includes(LinkPath)
+    }
+
 
   return (
     <div>

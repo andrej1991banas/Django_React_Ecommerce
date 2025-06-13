@@ -82,7 +82,7 @@ class PasswordChangeView(generics.CreateAPIView):
             return Response({"message": "As Error Occured"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
         
 
-class ProfileView(generics.RetrieveAPIView):
+class ProfileView(generics.RetrieveUpdateAPIView):
     """ API view getting profile for a user"""
     permission_classes = (AllowAny,)
     serializer_class = ProfileSerializer

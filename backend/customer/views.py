@@ -76,8 +76,33 @@ class WishlistAPIView(generics.ListCreateAPIView):
             return Response({"message":"WishlistCreted Successfully"}, status=status.HTTP_201_CREATED)
 
 
+class CustomerNotification(generics.ListAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny,]    
 
 
+    def get_queryset(self):
+        user_id = self.kwargs['user_id']
+        user = User.objects.get(id=user_id)
+        notifications = Notification.objects.filter(user=user, seen=False)
+        return notifications
+
+class MarkCustomerNotificationAsSeen(generics.RetrieveAPIView):
+    serializer_class = NotificationSerializer
+    permission_classes = [AllowAny,]
+
+
+    def get_object(self):
+        user_id = self.kwargs['user_id']
+        noti_id = self.kwargs['noti_id']
+        user = User.objects.get(id=user_id)
+        noti = Notification.objects.get(id=noti_id)
+
+        if noti.seen!= True:
+
+            noti.seen = True
+            noti.save()
+        return noti
 
 
 

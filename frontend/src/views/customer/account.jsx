@@ -3,7 +3,7 @@ import Sidebar from './sidebar';
 import { useState, useEffect } from 'react';
 import apiInstance from '../../utils/axios';
 import UserData from '../plugin/user_data';
-
+import { Link } from 'react-router-dom';
 
 
 
@@ -28,14 +28,14 @@ function Account() {
           <section>
             <div className="row">
               {/* Sidebar */}
-              <div className="col-lg-8">
-                <Sidebar />
-              </div>
+              
+              <Sidebar/>
+
               {/* Main Content */}
-              <div className="col-lg-4 mt-2">
+              <div className="col-lg-8">
                 <div className="rounded shadow p-3">
                   <h2>Hi {profile.fullname},</h2>
-                  <div className="mb-4">
+                  <div className="mt-4">
                     From your account dashboard, you can easily check & view your{" "}
                     <a href="#">orders</a>, manage your{" "}
                     <a href="#">shipping</a>, and{" "}
