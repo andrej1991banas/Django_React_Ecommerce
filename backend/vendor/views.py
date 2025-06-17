@@ -15,7 +15,7 @@ from django.db import models
 from rest_framework.decorators import api_view
 from django.db.models.functions import ExtractMonth
 from datetime import datetime, timedelta
-
+from django.http import Http404
 
 
 class DashboardStatsAPIView(generics.ListAPIView):
@@ -127,6 +127,48 @@ class RevenueAPIView(generics.ListAPIView):
    
 
 
+class FilterOrderAPIView(generics.ListAPIView):
+    serializer_class = CartOrderSerializer
+    permission_classes = [AllowAny] 
+
+    def get_queryset(self, *args, **kwargs):
+        vendor_id = self.kwargs['vendor_id']
+        vendor = Vendor.objects.get(id=vendor_id)
+        #get filstered instance with the request
+        filter = self.request.GET.get("filter")#get filter from URL by porduct status   
+
+
+        #define conditions for filtering the orders 
+        if filter == "paid":
+            orders = CartOrder.objects.filter(vendor=vendor, payment_status="paid").order_by('-id')
+        
+        elif filter == "pending":
+            orders = CartOrder.objects.filter(vendor=vendor, payment_status="pending").order_by('-id')
+        
+        elif filter == "processing":
+            orders = CartOrder.objects.filter(vendor=vendor, payment_status="processing").order_by('-id')
+        
+        # elif filter == "cancelled":
+        #     orders = CartOrder.objects.filter(vendor=vendor, payment_status="cancelled").order_by('-id')
+        
+        elif  filter == "latest":
+            orders = CartOrder.objects.filter(vendor=vendor).order_by('-id')
+
+        elif  filter == "oldest":
+            orders = CartOrder.objects.filter(vendor=vendor).order_by('id')
+
+        elif  filter == "pending":
+            orders = CartOrder.objects.filter(vendor=vendor, order_status="pending").order_by('-id')
+
+        elif  filter == "fullflled":
+            orders = CartOrder.objects.filter(vendor=vendor, order_status="fullflled").order_by('-id')
+
+        elif  filter == "cancelled":
+            orders = CartOrder.objects.filter(vendor=vendor, order_status="cancelled").order_by('-id')
+
+        return orders
+
+
 class FilterProductAPIView(generics.ListAPIView):
     """ API view with definition of filtering the products from vendor with status data (stattes)"""
     permission_classes = [AllowAny]
@@ -198,7 +240,7 @@ def MonthlyEarningTracker(request, vendor_id):
     monthly_earning_tracker = (
         CartOrderItem.objects
         .filter(vendor=vendor, order__payment_status="paid")
-        .annotate(month=ExtractMonth ("data"))
+        .annotate(month=ExtractMonth ("date"))
         .values("month")
         .annotate(
             sales_count = models.Sum("qty"),
@@ -219,27 +261,28 @@ class ReviewListAPIView(generics.ListAPIView):
     def get_queryset(self):
         vendor_id = self.kwargs['vendor_id']
         vendor = Vendor.objects.get(id=vendor_id)
-        return Review.objects.filter(product__vendor=vendor) #getting data for review via foreign key product__vendor
-    
+        
+        reviews= Review.objects.filter(product__vendor=vendor) #getting data for review via foreign key product__vendor
+        print (reviews)
+        return reviews
 
 
-class ReviewDetailAPIView(generics.RetrieveAPIView):
+class ReviewDetailAPIView(generics.RetrieveUpdateAPIView):
     """ API view to render  review for vendor porduct"""
-    serializer_class = ReviewSerializer
-    permission_classes = [AllowAny]
 
-    #filter reviews with vendor data and review id to het just one review
+    serializer_class = ReviewSerializer
+    permission_classes = (AllowAny,)
+
     def get_object(self):
         vendor_id = self.kwargs['vendor_id']
         review_id = self.kwargs['review_id']
 
-        vendor=Vendor.objects.get(id=vendor_id)
-        review = Review.objects.filter(product__vendor=vendor, id=review_id) #getting data for review via foreign key product__vendor
+        vendor = Vendor.objects.get(id=vendor_id)
+        review = Review.objects.get(product__vendor=vendor, id=review_id)
+        return review
 
-        return Review.objects.get(id=review_id)
 
-
-class CouponListCreateAPIView(generics.ListAPIView):
+class CouponListCreateAPIView(generics.ListCreateAPIView):
     """ API view to ernder all coupons for vendor"""
     serializer_class = CouponsSerializer
     permission_classes = [AllowAny]
@@ -270,7 +313,7 @@ class CouponListCreateAPIView(generics.ListAPIView):
         return Response ({"message": "Couon Created SUccessfuly"}, status=status.HTTP_201_CREATED)
     
 
-class CouponDetailsAPIView(generics.RetrieveAPIView):
+class CouponDetailsAPIView(generics.RetrieveUpdateDestroyAPIView):
     """ API view to render  coupon for vendor"""
     serializer_class = CouponsSerializer
     permission_classes = [AllowAny]
@@ -315,7 +358,7 @@ class CouponStatsAPIView(generics.ListAPIView):
         return Response(serializer.data)
     
     
-class NotificationUnseenAPIView(generics.ListAPIView):
+class NotificationAPIView(generics.ListAPIView):
     """ API view to ernder all unseen notifications for vendor"""
     serializer_class = NotificationSerializer
     permission_classes = [AllowAny]
@@ -325,18 +368,6 @@ class NotificationUnseenAPIView(generics.ListAPIView):
         vendor_id = self.kwargs['vendor_id']
         vendor = Vendor.objects.get(id=vendor_id)
         return Notification.objects.filter(vendor=vendor, seen=False).order_by('-id') #getting data for notification 
-    
-
-class NotificationSeenAPIView(generics.ListAPIView):
-    """ API view to ernder all seen notifications for vendor"""
-    serializer_class = NotificationSerializer
-    permission_classes = [AllowAny]
-
-
-    def get_queryset(self):
-        vendor_id = self.kwargs['vendor_id']
-        vendor = Vendor.objects.get(id=vendor_id)
-        return Notification.objects.filter(vendor=vendor, seen=True).order_by('-id') #getting data for notification
 
 
 
@@ -371,7 +402,7 @@ class NotificationSummaryAPIView(generics.ListAPIView):
 
 
 
-class NotificationVendorMarkAsSeen(generics.ListAPIView):
+class NotificationVendorMarkAsSeen(generics.RetrieveAPIView):
     serializer_class = NotificationSerializer
     permission_classes = [AllowAny]
 
@@ -381,7 +412,7 @@ class NotificationVendorMarkAsSeen(generics.ListAPIView):
 
 
         vendor = Vendor.objects.get(id=vendor_id)
-        noti = Notification.objects.get(id=noti_id)
+        noti = Notification.objects.get(id=noti_id, vendor=vendor)
         noti.seen = True
         noti.save()
 
@@ -389,19 +420,25 @@ class NotificationVendorMarkAsSeen(generics.ListAPIView):
 
 
 
-class VendorProfileUpdateView(generics.RetrieveAPIView):
-    queryset = Profile.objects.all()
+class VendorProfileUpdateView(generics.RetrieveUpdateAPIView):
+    """ View to retrieve and update vendor profile based on user_id """
     serializer_class = ProfileSerializer
-    permission_classes = [AllowAny]
-
+    permission_classes = (AllowAny, )
 
     def get_object(self):
-        pass
+        user_id = self.kwargs['pk']  # 'pk' corresponds to user_id from the URL
+        try:
+            # Fetch the profile associated with the user_id
+            profile = Profile.objects.get(user__id=user_id)
+        except Profile.DoesNotExist:
+            raise Http404("Profile matching the user ID does not exist.")
+        return profile
 
 
 
-class ShopUpdateView(generics.RetrieveAPIView):
-    queryset = Profile.objects.all()
+
+class ShopUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Vendor.objects.all()
     serializer_class = VendorSerializer
     permission_classes = [AllowAny]
 

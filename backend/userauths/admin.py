@@ -9,7 +9,7 @@ class UserAdmin(admin.ModelAdmin):
     search_fields = ['username', 'email', ]
 
 class ProfileAdmin(admin.ModelAdmin):
-    list_display = ['fullname', 'gender', 'country', ]
+    list_display = ['pid','fullname', 'gender', 'country', ]
     list_filter = ['gender', 'country', ]
 
 

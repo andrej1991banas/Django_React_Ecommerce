@@ -204,7 +204,17 @@ class ReviewSerializer(serializers.ModelSerializer):
     profile = ProfileSerializer()
     class Meta:
         model = Review
-        fields = ["id", "review", "rating", "user", "profile", "date"]
+        fields = [
+            'id',
+            'product',
+            'user',
+            'rating',
+            'reply',
+            'review',
+            'date',
+            'active',
+            'profile',
+        ]
     #function for unpack the data in the arrays, to deeper levels of the data
     def __init__(self, *args, **kwargs):
         super(ReviewSerializer, self).__init__(*args, **kwargs)

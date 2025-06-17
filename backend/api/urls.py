@@ -51,6 +51,7 @@ urlpatterns = [
     path('vendor/products/<vendor_id>/', vendor_views.ProductAPIView.as_view()),
     path('vendor/orders/<vendor_id>/', vendor_views.OrderAPIView.as_view()),
     path('vendor/orders/<vendor_id>/<order_oid>/', vendor_views.OrderdetailAPIView.as_view()),
+    path('vendor/filter/orders/<vendor_id>', vendor_views.FilterOrderAPIView.as_view()),
     path('vendor/revenue/<vendor_id>/', vendor_views.RevenueAPIView.as_view()),
     path('vendor/filter-product/<vendor_id>/', vendor_views.FilterProductAPIView.as_view()),
     path('vendor/earnings/<vendor_id>/', vendor_views.EarningAPIView.as_view()),
@@ -60,14 +61,13 @@ urlpatterns = [
     path('vendor/coupon-list/<vendor_id>/', vendor_views.CouponListCreateAPIView.as_view()),
     path('vendor/coupon-details/<vendor_id>/<coupon_id>/', vendor_views.CouponDetailsAPIView.as_view()),
     path('vendor/coupon-stats/<vendor_id>/', vendor_views.CouponStatsAPIView.as_view()),
-    path('vendor/unseen-noti/<vendor_id>/', vendor_views.NotificationUnseenAPIView.as_view()),
-    path('vendor/seen-noti/<vendor_id>/', vendor_views.NotificationSeenAPIView.as_view()),
-    path('vendor/noti/<vendor_id>/', vendor_views.NotificationSummaryAPIView.as_view()),
-    path('vendor/noti-mark-as-seen/<vendor_id>/', vendor_views.NotificationVendorMarkAsSeen.as_view()),
+    path('vendor/vendor-noti/<vendor_id>/', vendor_views.NotificationAPIView.as_view()),
+    path('vendor/noti-summary/<vendor_id>/', vendor_views.NotificationSummaryAPIView.as_view()),
+    path('vendor/noti-mark-as-seen/<vendor_id>/<noti_id>/', vendor_views.NotificationVendorMarkAsSeen.as_view()),
     path('vendor/profile-update/<int:pk>/', vendor_views.VendorProfileUpdateView.as_view()),
     path('vendor/shop-update/<int:pk>/', vendor_views.ShopUpdateView.as_view()),
     path('vendor/shop-view/<vendor_slug>/', vendor_views.ShopAPIView.as_view()),
     path('vendor/products-view/<vendor_slug>/', vendor_views.ShopProductAPIView.as_view()),
     
-    
+ 
 ]

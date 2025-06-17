@@ -88,7 +88,7 @@ function Store_header() {
                                      <ul className="dropdown-menu" aria-labelledby="navbarDropdown">
                                          <li><Link className="dropdown-item" to="/vendor/dashboard/"> <i className='fas fa-user'></i> Dashboard</Link></li>
                                          <li><Link className="dropdown-item" to="/vendor/products/"> <i className='bi bi-grid-fill'></i> Products</Link></li>
-                                         <li><Link className="dropdown-item" to="/vendor/product/new/"> <i className='fas fa-plus-circle'></i> Add Products</Link></li>
+                                         <li><Link className="dropdown-item" to="/vendor/add-product/"> <i className='fas fa-plus-circle'></i> Add Products</Link></li>
                                          <li><Link className="dropdown-item" to="/vendor/orders/"> <i className='fas fa-shopping-cart'></i> Orders</Link></li>
                                          <li><Link className="dropdown-item" to="/vendor/earning/"> <i className='fas fa-dollar-sign'></i> Earning</Link></li>
                                          <li><Link className="dropdown-item" to="/vendor/reviews/"> <i className='fas fa-star'></i> Reviews</Link></li>

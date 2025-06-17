@@ -18,6 +18,18 @@ function OrdersVendor() {
       });
   }, []);
 
+
+  const handleFilterOrder = async (filter) => {
+        console.log(filter);
+
+        const response = await apiInstance.get(`vendor/filter/orders/${UserData()?.vendor_id}?filter=${filter}`)
+        setOrders(response.data)
+
+  }
+
+
+
+
   return (
     <div className="container-fluid mt-4">
       <h2 className="mb-4">Vendor Orders</h2>
@@ -33,17 +45,17 @@ function OrdersVendor() {
           Filter <i className="fas fa-sliders" />
         </button>
         <ul className="dropdown-menu" aria-labelledby="dropdownMenuButton1">
-          <li><a className="dropdown-item" href="#">Payment Status: Paid</a></li>
-          <li><a className="dropdown-item" href="#">Payment Status: Unpaid</a></li>
-          <li><a className="dropdown-item" href="#">Payment Status: Pending</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("paid")}>Payment Status: Paid</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("processing")}>Payment Status: Proccesing</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("pending")} >Payment Status: Pending</a></li>
           <hr />
-          <li><a className="dropdown-item" href="#">Date: Latest</a></li>
-          <li><a className="dropdown-item" href="#">Date: Oldest</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("latest")} >Date: Latest</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("oldest")} >Date: Oldest</a></li>
           <hr />
-          <li><a className="dropdown-item" href="#">Delivery Status: Shipped</a></li>
-          <li><a className="dropdown-item" href="#">Delivery Status: Processing</a></li>
-          <li><a className="dropdown-item" href="#">Delivery Status: Arrived</a></li>
-          <li><a className="dropdown-item" href="#">Delivery Status: Delivered</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("fullflled")} >Delivery Status: Shipped</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("cancelled")} >Delivery Status: Cancelled</a></li>
+          <li><a className="dropdown-item" onClick={() => handleFilterOrder("pending")} >Delivery Status: Pendig</a></li>
+          {/* <li><a className="dropdown-item" onClick={() => handleFilterOrder("latest")} >Delivery Status: Delivered</a></li> */}
         </ul>
       </div>
 

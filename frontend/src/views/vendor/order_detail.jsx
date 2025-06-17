@@ -24,6 +24,11 @@ function OrderDetailVendor() {
         })
     }, [])
 
+    
+    
+
+
+
 
   return (
     <div>
@@ -40,7 +45,7 @@ function OrderDetailVendor() {
                                     <section className="mb-5">
                                         <h3 className="mb-3">
                                             {" "}
-                                            <i className="fas fa-shopping-cart text-primary" /> #wuriuiwer{" "}
+                                            <i className="fas fa-shopping-cart text-primary" />Order ID: #{orders.oid}
                                         </h3>
                                         <div className="row gx-xl-5">
                                             <div className="col-lg-3 mb-4 mb-lg-0">
@@ -53,7 +58,7 @@ function OrderDetailVendor() {
                                                             <div className="">
                                                                 <p className="mb-1">Total</p>
                                                                 <h2 className="mb-0">
-                                                                    $99.99
+                                                                    ${orders.total}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -74,7 +79,7 @@ function OrderDetailVendor() {
                                                             <div className="">
                                                                 <p className="mb-1">Payment Status</p>
                                                                 <h2 className="mb-0">
-                                                                    Paid
+                                                                    {orders.payment_status}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -95,7 +100,7 @@ function OrderDetailVendor() {
                                                             <div className="">
                                                                 <p className="mb-1">Order Status</p>
                                                                 <h2 className="mb-0">
-                                                                    2
+                                                                    {orders.order_status}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -116,7 +121,7 @@ function OrderDetailVendor() {
                                                             <div className="">
                                                                 <p className="mb-1">Shipping Amount</p>
                                                                 <h2 className="mb-0">
-                                                                    $2.19
+                                                                    ${orders.shipping_amount}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -135,9 +140,9 @@ function OrderDetailVendor() {
                                                     <div className="card-body">
                                                         <div className="d-flex align-items-center">
                                                             <div className="">
-                                                                <p className="mb-1">Tax Fee</p>
+                                                                <p className="mb-1">VAT Tax</p>
                                                                 <h2 className="mb-0">
-                                                                    $3.39
+                                                                    ${orders.tax_fee}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -158,7 +163,7 @@ function OrderDetailVendor() {
                                                             <div className="">
                                                                 <p className="mb-1">Service Fee</p>
                                                                 <h2 className="mb-0">
-                                                                    $35.39
+                                                                    ${orders.service_fee}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -178,8 +183,8 @@ function OrderDetailVendor() {
                                                         <div className="d-flex align-items-center">
                                                             <div className="">
                                                                 <p className="mb-1">Discount Fee</p>
-                                                                <h2 className="mb-0">
-                                                                    $5.39
+                                                                <h2 className="mb-0 ">
+                                                                    - ${orders.saved}
                                                                     <span
                                                                         className=""
                                                                         style={{ fontSize: "0.875rem" }}
@@ -194,137 +199,55 @@ function OrderDetailVendor() {
                                     </section>
 
                                     <section className="">
+ 
                                         <div className="row rounded shadow p-3">
                                             <div className="col-lg-12 mb-4 mb-lg-0">
                                                 <table className="table align-middle mb-0 bg-white">
                                                     <thead className="bg-light">
+                                                                                                   
                                                         <tr>
+                                                            
                                                             <th>Product</th>
                                                             <th>Price</th>
                                                             <th>Qty</th>
                                                             <th>Total</th>
                                                         </tr>
+                                                        
                                                     </thead>
-                                                    <tbody>
+                                                    
+                                                    {orderItems.map((oi, index) => (
+                                                    <tbody key={index}>                                  
+
                                                         <tr>
                                                             <td>
                                                                 <div className="d-flex align-items-center">
                                                                     <img
-                                                                        src="https://cdn.shopify.com/s/files/1/0070/7032/files/image5_4578a9e6-2eff-4a5a-8d8c-9292252ec848.jpg?v=1620247043"
+                                                                        src={oi.product.image}
                                                                         style={{ width: 80 }}
                                                                         alt=""
                                                                     />
                                                                     <p className="text-muted mb-0">
-                                                                        13th December 2024
+                                                                        {moment(oi.created_at).format("DD MMM YYYY")}
                                                                     </p>
                                                                 </div>
                                                             </td>
                                                             <td>
-                                                                <p className="fw-normal mb-1">$20.13</p>
+                                                                <p className="fw-normal mb-1">${oi.price}</p>
                                                             </td>
                                                             <td>
-                                                                <p className="fw-normal mb-1">3</p>
+                                                                <p className="fw-normal mb-1">{oi.qty}</p>
                                                             </td>
                                                             <td>
-                                                                <span className="fw-normal mb-1">$60.39</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <div className="d-flex align-items-center">
-                                                                    <img
-                                                                        src="https://cdn.shopify.com/s/files/1/0070/7032/files/image5_4578a9e6-2eff-4a5a-8d8c-9292252ec848.jpg?v=1620247043"
-                                                                        style={{ width: 80 }}
-                                                                        alt=""
-                                                                    />
-                                                                    <p className="text-muted mb-0">
-                                                                        13th December 2024
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">$20.13</p>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">3</p>
-                                                            </td>
-                                                            <td>
-                                                                <span className="fw-normal mb-1">$60.39</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <div className="d-flex align-items-center">
-                                                                    <img
-                                                                        src="https://cdn.shopify.com/s/files/1/0070/7032/files/image5_4578a9e6-2eff-4a5a-8d8c-9292252ec848.jpg?v=1620247043"
-                                                                        style={{ width: 80 }}
-                                                                        alt=""
-                                                                    />
-                                                                    <p className="text-muted mb-0">
-                                                                        13th December 2024
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">$20.13</p>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">3</p>
-                                                            </td>
-                                                            <td>
-                                                                <span className="fw-normal mb-1">$60.39</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <div className="d-flex align-items-center">
-                                                                    <img
-                                                                        src="https://cdn.shopify.com/s/files/1/0070/7032/files/image5_4578a9e6-2eff-4a5a-8d8c-9292252ec848.jpg?v=1620247043"
-                                                                        style={{ width: 80 }}
-                                                                        alt=""
-                                                                    />
-                                                                    <p className="text-muted mb-0">
-                                                                        13th December 2024
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">$20.13</p>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">3</p>
-                                                            </td>
-                                                            <td>
-                                                                <span className="fw-normal mb-1">$60.39</span>
-                                                            </td>
-                                                        </tr>
-                                                        <tr>
-                                                            <td>
-                                                                <div className="d-flex align-items-center">
-                                                                    <img
-                                                                        src="https://cdn.shopify.com/s/files/1/0070/7032/files/image5_4578a9e6-2eff-4a5a-8d8c-9292252ec848.jpg?v=1620247043"
-                                                                        style={{ width: 80 }}
-                                                                        alt=""
-                                                                    />
-                                                                    <p className="text-muted mb-0">
-                                                                        13th December 2024
-                                                                    </p>
-                                                                </div>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">$20.13</p>
-                                                            </td>
-                                                            <td>
-                                                                <p className="fw-normal mb-1">3</p>
-                                                            </td>
-                                                            <td>
-                                                                <span className="fw-normal mb-1">$60.39</span>
+                                                                <span className="fw-normal mb-1">${oi.sub_total}</span>
                                                             </td>
                                                         </tr>
                                                     </tbody>
+                                                    ))}
                                                 </table>
                                             </div>
-                                        </div>
+                                       
+                                            </div>
+                                            
                                     </section>
                                 </div>
                             </main>

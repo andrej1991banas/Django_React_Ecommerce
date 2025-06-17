@@ -31,8 +31,15 @@ import DashboardVendor from './views/vendor/dashboard';
 import ProductsVendor from './views/vendor/products';
 import OrdersVendor from './views/vendor/orders';
 import OrderDetailVendor from './views/vendor/order_detail';
-
-
+import Earning from './views/vendor/earning';
+import Reviews from './views/vendor/reviews';
+import ReviewDetail from './views/vendor/review_detail';
+import Coupon from './views/vendor/coupon';
+import EditCoupon from './views/vendor/edit_coupon';
+import Notification from './views/vendor/vendor_notification';
+import VendorSettings from './views/vendor/vendor_settings';
+import Shop from './views/vendor/shop';
+import AddProduct from './views/vendor/add_product';
 
 
 
@@ -92,9 +99,18 @@ function App() {
               <Route path="/vendor/products/" element={<PrivateRoute> <ProductsVendor /> </PrivateRoute>} /> 
               <Route path="/vendor/orders/" element={<PrivateRoute> <OrdersVendor /> </PrivateRoute>} /> 
               <Route path="/vendor/order/:order_oid/" element={<PrivateRoute> <OrderDetailVendor /> </PrivateRoute>} /> 
+              <Route path="/vendor/earning/" element={<PrivateRoute> <Earning /> </PrivateRoute>} /> 
+              <Route path="/vendor/reviews/" element={<PrivateRoute> <Reviews /> </PrivateRoute>} /> 
+              <Route path="/vendor/reviews/:review_id" element={<PrivateRoute> <ReviewDetail /> </PrivateRoute>} /> 
+              <Route path="/vendor/coupon/" element={<PrivateRoute> <Coupon /> </PrivateRoute>} /> 
+              <Route path="/vendor/coupon/:coupon_id" element={<PrivateRoute> <EditCoupon /> </PrivateRoute>} /> 
+              <Route path="/vendor/notifications/" element={<PrivateRoute> <Notification /> </PrivateRoute>} /> 
+              <Route path="/vendor/settings/" element={<PrivateRoute> <VendorSettings /> </PrivateRoute>} /> 
+              <Route path="/vendor/shop/:slug/" element={<PrivateRoute> <Shop /> </PrivateRoute>} /> 
+              <Route path="/vendor/add-product/" element={<PrivateRoute> <AddProduct /> </PrivateRoute>} />
 
 
-            </Routes>
+            </Routes> 
           </MainWrapper>
         <Store_footer />
       </BrowserRouter>

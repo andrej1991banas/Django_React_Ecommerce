@@ -45,7 +45,8 @@ class CartAdmin(admin.ModelAdmin):
 
 
 class CartOrderAdmin(admin.ModelAdmin):
-    list_display = ['oid', 'payment_status', 'total']
+    list_editable = ['payment_status', 'order_status', 'total']
+    list_display = ['oid', 'payment_status', 'order_status', 'total']
 
     
 

@@ -343,16 +343,18 @@ class Review(models.Model):
     #date of creation
     date = models.DateTimeField(auto_now_add=True)  
 
-    #string representation of the Review model  
-    def __str__(self):
-        return self.product.title
-
+    
     class Meta:
         verbose_name_plural = "Reviews & Rating"
 
 
     def profile(self):
         return Profile.objects.get(user=self.user)
+    
+    #string representation of the Review model  
+    def __str__(self):
+        return self.product.title
+
 
 #signal that will run everytime that the new Review model is created
 @receiver(post_save, sender=Review)

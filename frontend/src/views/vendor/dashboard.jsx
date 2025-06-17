@@ -49,7 +49,7 @@ function DashboardVendor() {
     const product_months = productChartData?.map (item => item.month)
     const product_counts = productChartData?.map (item => item.products)
      
-   
+//    create data for the chart
     const order_data = {
         labels: order_months,
         datasets: [
